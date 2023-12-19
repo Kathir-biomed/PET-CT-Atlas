@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import re
-
+'''
 # Hard-coded metadata for patient 1 (can be automated later)
 radionuclide_total_dose = 313000000.0  # hard-coded from DICOM
 rescale_slope_pet = 1.77409  # Standard_assumption for PET
@@ -19,6 +19,43 @@ series_time = timedelta(seconds=84202.000000)  # hard-coded from DICOM
 series_date = 20010913  # %Y%m%d
 acquisition_date = 20010913  # %Y%m%d
 patient_id = "PETCT_0117d7f11f"
+##########
+(0008, 0021): SeriesDate
+(0008, 0022): AcquisitionDate
+(0008, 0031): SeriesTime
+(0008, 0032): AcquisitionTime
+(0008, 0060): PT
+(0010, 1030): PatientWeight)
+(0028, 0051): CorrectedImage (ATTN, DECY)
+(0054, 0016): RadiopharmaceuticalInformationSequence
+(0018, 1072): RadiopharmaceuticalStartTime
+(0018, 1074): RadionuclideTotalDose
+(0018, 1075): RadionuclideHalfLife
+(0054, 1001): BQML
+(0054, 1002): EMISSION
+(0054, 1102): START
+(0054, 1300): FrameReferenceTime
+(0054, 1321): DecayFactor
+(0010, 0040): (M,F)
+##########
+'''
+# Hard-coded metadata for patient 2 (can be automated later)
+#PET
+patient_id = "PETCT_4ef69de4e1" # (0010, 0020) Patient ID PETCT_4ef69de4e1
+series_date = 20021025  # %Y%m%d # (0008, 0021) Series Date 20021025
+acquisition_date = 20021025  # %Y%m%d # (0008, 0022) Acquisition Date 20021025
+series_time = timedelta(seconds=131136.000000)  # (0008, 0031) Series Time 131136.000000
+acquisition_time = timedelta(seconds=131136.000000)  # (0008, 0032) Acquisition Time 131136.000000 
+weight = 67  # (0010, 1030) Patient's Weight 67
+radionuclide_total_dose = 329000000.0  # (0018, 1074) Radionuclide Total Dose             DS: '329000000.0'
+radionuclide_half_life = 6586.2  # actual half-life of F-18 # (0018, 1075) Radionuclide Half Life              DS: '6586.2'
+rescale_slope_pet = 0.878121  # (0028, 1053) Rescale Slope 0.878121
+rescale_intercept_pet = 0  # (0028, 1052) Rescale Intercept 0
+#CT
+#rescale_slope_ct = 1  # (0028, 1053) Rescale Slope 1
+#rescale_intercept_ct = -1024  # (0028, 1052) Rescale Intercept -1024
+rescale_slope_ct = 0.9236  # (0019, 1092) [Osteo Regression Line Slope] 0.9236
+rescale_intercept_ct = -1.6565  # (0019, 1093) [Osteo Regression Line Intercept] -1.6565
 
 def calculate_hu_metrics(ct_nifti_path, segmented_nifti_path):
     # Load CT NIfTI file
@@ -172,12 +209,12 @@ def calculate_organ_suv(nifti_file_path, segmented_nifti_path, weight, radionucl
     return mean_suvbw_organ, suv_peak_organ, suv_max_organ
 
 # NIfTI file paths
-nifti_file_path_pet = "C:/Personal/ABX/patient_1/NIFTI/PETCT_0117d7f11f/09-13-2001-NA-PET-CT Ganzkoerper  primaer mit KM-68547/PET.nii.gz"
-nifti_file_path_ct = "C:/Personal/ABX/patient_1/NIFTI/PETCT_0117d7f11f/09-13-2001-NA-PET-CT Ganzkoerper  primaer mit KM-68547/CTres.nii.gz"
-existing_excel_file_path = f"C:/Personal/ABX/patient_1/Results/{patient_id}_12_12_23_results.xlsx"
+nifti_file_path_pet = "C:/Personal/ABX/patient_2/NIFTI/PETCT_4ef69de4e1/10-25-2002-NA-PET-CT Teilkoerper  primaer mit KM-18049/PET.nii.gz"
+nifti_file_path_ct = "C:/Personal/ABX/patient_2/NIFTI/PETCT_4ef69de4e1/10-25-2002-NA-PET-CT Teilkoerper  primaer mit KM-18049/CTres.nii.gz"
+existing_excel_file_path = f"C:/Personal/ABX/patient_2/Results/{patient_id}_12_12_23_results.xlsx"
 
 # Get a list of all NIfTI files in the "segmented_organs" folder
-segmented_organs_folder = "C:/Personal/ABX/patient_1/segmentations"
+segmented_organs_folder = "C:/Personal/ABX/patient_2/segmentations"
 segmented_nifti_paths = [os.path.join(segmented_organs_folder, file) for file in os.listdir(segmented_organs_folder) if file.endswith(".nii.gz")]
 
 # Initialize an empty DataFrame
